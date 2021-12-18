@@ -1,0 +1,2 @@
+first=com.easy4coding.dubbo.spi.service.adaptive.FirstAdaptiveSpiImpl
+second=com.easy4coding.dubbo.spi.service.adaptive.SecondAdaptiveSpiImpl

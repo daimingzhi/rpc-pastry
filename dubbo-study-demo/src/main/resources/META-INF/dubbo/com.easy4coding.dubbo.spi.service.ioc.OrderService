@@ -1,0 +1,3 @@
+com.easy4coding.dubbo.spi.service.ioc.OrderAdaptiveService
+card=com.easy4coding.dubbo.spi.service.ioc.CardServiceImpl
+cash=com.easy4coding.dubbo.spi.service.ioc.CashServiceImpl
