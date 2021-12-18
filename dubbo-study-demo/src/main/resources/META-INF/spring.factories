@@ -1,0 +1,4 @@
+# Initializers
+com.easy4coding.spring.service.SpringSpiInterface=\
+com.easy4coding.spring.service.SpringSpiInterfaceImpl,\
+com.easy4coding.spring.service.OtherSpringSpiImpl
