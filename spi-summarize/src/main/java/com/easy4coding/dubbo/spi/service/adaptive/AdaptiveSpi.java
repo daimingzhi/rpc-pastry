@@ -3,6 +3,7 @@ package com.easy4coding.dubbo.spi.service.adaptive;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.Adaptive;
 import org.apache.dubbo.common.extension.SPI;
+import org.apache.dubbo.rpc.Invocation;
 
 /**
  * @author dmz
@@ -18,11 +19,19 @@ public interface AdaptiveSpi {
      * <p>
      * 2.方法的参数中有一个URL，需要注意的是这是一个org.apache.dubbo.common.URL,不是java.net.URL
      */
-    @Adaptive("adaptive")
-    void adaptiveMethod(URL url);
+    @Adaptive("adaptive1")
+    void adaptiveMethod1(URL url);
 
-    @Adaptive("adaptive")
-    void adaptiveMethod(URLHolder url);
+    @Adaptive("adaptive2")
+    void adaptiveMethod2(URLHolder url);
+
+    @Adaptive
+    void adaptiveMethod3(URLHolder url, Invocation invocation);
+
+    /**
+     * 普通方法，用于观察最终生成的代码
+     */
+    void normalMethod();
 
     class URLHolder {
 
@@ -36,5 +45,4 @@ public interface AdaptiveSpi {
             return url;
         }
     }
-
 }

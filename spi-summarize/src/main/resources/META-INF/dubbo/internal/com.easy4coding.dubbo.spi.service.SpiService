@@ -1,0 +1,3 @@
+internal=com.easy4coding.dubbo.spi.service.impl.OtherImpl
+internal=com.easy4coding.dubbo.spi.service.impl.InternalSpiServiceImpl
+com.easy4coding.dubbo.spi.service.aop.SpiServiceWrapper

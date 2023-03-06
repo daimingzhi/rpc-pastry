@@ -1,6 +1,7 @@
 package com.easy4coding.dubbo.spi.service.adaptive;
 
 import org.apache.dubbo.common.URL;
+import org.apache.dubbo.rpc.Invocation;
 
 /**
  * @author dmz
@@ -8,12 +9,22 @@ import org.apache.dubbo.common.URL;
  */
 public class FirstAdaptiveSpiImpl implements AdaptiveSpi {
     @Override
-    public void adaptiveMethod(URL url) {
+    public void adaptiveMethod1(URL url) {
         System.out.println("first");
     }
 
     @Override
-    public void adaptiveMethod(URLHolder url) {
+    public void adaptiveMethod2(URLHolder url) {
         System.out.println("first");
+    }
+
+    @Override
+    public void adaptiveMethod3(URLHolder url, Invocation invocation) {
+
+    }
+
+    @Override
+    public void normalMethod() {
+
     }
 }

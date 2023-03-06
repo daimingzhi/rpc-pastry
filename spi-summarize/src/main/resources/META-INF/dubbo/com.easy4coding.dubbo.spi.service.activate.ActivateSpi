@@ -1,0 +1,2 @@
+first=com.easy4coding.dubbo.spi.service.activate.FirstActivateSpiImpl
+second=com.easy4coding.dubbo.spi.service.activate.SecondActivateSpiImpl
