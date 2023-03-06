@@ -1,3 +1,0 @@
-internal=com.easy4coding.dubbo.spi.service.impl.InternalSpiServiceImpl
-other=com.easy4coding.dubbo.spi.service.impl.OtherImpl
-com.easy4coding.dubbo.spi.service.aop.SpiServiceWrapper
