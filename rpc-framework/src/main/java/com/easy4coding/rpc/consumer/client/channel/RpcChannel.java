@@ -6,7 +6,7 @@ package com.easy4coding.rpc.consumer.client.channel;
  */
 public interface RpcChannel {
 
-    void send(Object msg) throws Exception;
+    void send(byte[] msg) throws Exception;
 
     byte[] receive() throws Exception;
 

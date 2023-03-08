@@ -1,5 +1,6 @@
-package com.easy4coding.rpc.consumer.client.channel;
+package com.easy4coding.rpc.consumer.client.channel.netty;
 
+import com.easy4coding.rpc.consumer.client.channel.RpcChannel;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -20,14 +21,18 @@ public class NettyChannel implements RpcChannel {
         Bootstrap bootstrap = new Bootstrap();
         EventLoopGroup workerGroup = new NioEventLoopGroup(64);
         bootstrap.group(workerGroup).channel(NioSocketChannel.class)
-            //这个套接字选项通知内核，如果端口忙，但TCP状态位于 TIME_WAIT ，
-            // 可以重用端口。如果端口忙，而TCP状态位于其他状态，重用端口时依旧得到一个错误信息，指明"地址已经使用中"
+            // 如果端口忙，但TCP状态位于 TIME_WAIT ，可以重用端口。
+            // 如果端口忙，而TCP状态位于其他状态，重用端口时依旧得到一个错误信息，指明"地址已经使用中"
             .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
             // 是否启用Nagle算法，启用：TCP_NODELAY=false，数据包会合并再发送
+            .option(ChannelOption.TCP_NODELAY, false)
+            // 建立连接超时时间
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)
+            // 客户端handler
             .handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
-
+                    ch.pipeline().addLast(new RpcNettyClientHandler());
                 }
             });
         // connect
@@ -37,8 +42,8 @@ public class NettyChannel implements RpcChannel {
     }
 
     @Override
-    public void send(Object msg) throws Exception {
-
+    public void send(byte[] msg) throws Exception {
+        channel.writeAndFlush(msg);
     }
 
     @Override

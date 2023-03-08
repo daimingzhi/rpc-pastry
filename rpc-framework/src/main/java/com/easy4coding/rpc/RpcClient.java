@@ -11,13 +11,16 @@ import com.easy4coding.rpc.consumer.proxy.RpcProxyFactory;
  */
 public class RpcClient {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         // consumer生成代理对象，发起rpc调用
         final DmzService proxy = RpcProxyFactory.createProxy(DmzService.class, "127.0.0.1", 8080);
         proxy.say("hello");
         proxy.borrow(new Book("big book", "big"));
         final Book buy = proxy.buy(100);
         System.out.println("client buy a book：" + JSON.toJSONString(buy));
+
+
+        System.in.read();
     }
 
 }

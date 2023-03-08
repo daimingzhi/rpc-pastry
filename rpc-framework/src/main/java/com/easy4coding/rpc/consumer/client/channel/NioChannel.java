@@ -1,6 +1,5 @@
 package com.easy4coding.rpc.consumer.client.channel;
 
-import com.alibaba.fastjson.JSON;
 import com.easy4coding.rpc.consumer.exception.RpcException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author dmz
@@ -52,10 +50,9 @@ public class NioChannel implements RpcChannel {
     }
 
     @Override
-    public void send(Object msg) throws Exception {
-        final byte[] bytes = JSON.toJSONString(msg).getBytes(StandardCharsets.UTF_8);
-        ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
-        byteBuffer.put(bytes);
+    public void send(byte[] msg) throws Exception {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(msg.length);
+        byteBuffer.put(msg);
         byteBuffer.flip();
         final int write = socketChannel.write(byteBuffer);
         log.debug("client send bytes:{}", write);
@@ -70,6 +67,8 @@ public class NioChannel implements RpcChannel {
             if (key.isReadable()) {
                 final ByteBuffer allocate = ByteBuffer.allocate(1024 * 10);
                 client.read(allocate);
+
+                client.close();
                 return allocate.array();
             }
         }
@@ -80,7 +79,6 @@ public class NioChannel implements RpcChannel {
     public void close() {
         try {
             socketChannel.close();
-
         } catch (IOException e) {
             log.error("some error occur when client close", e);
         }

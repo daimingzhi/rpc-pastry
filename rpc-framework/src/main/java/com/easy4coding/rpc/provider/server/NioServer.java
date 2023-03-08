@@ -14,6 +14,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,7 +66,9 @@ public class NioServer implements RpcServer {
 
             while (true) {
                 selector.select();
-                for (SelectionKey key : selector.selectedKeys()) {
+                for (Iterator<SelectionKey> iterator = selector.selectedKeys().iterator(); iterator.hasNext(); ) {
+                    SelectionKey key = iterator.next();
+                    iterator.remove();
                     if (key.isAcceptable()) {
                         ServerSocketChannel ssc = (ServerSocketChannel)key.channel();
                         final SocketChannel client = ssc.accept();
@@ -82,15 +85,36 @@ public class NioServer implements RpcServer {
                         final SocketChannel client = (SocketChannel)key.channel();
                         ByteBuffer byteBuffer = ByteBuffer.allocate(1024 * 10);
                         final int read = client.read(byteBuffer);
-                        if (read > 0) {
-                            final String requestStr = new String(byteBuffer.array());
-                            log.info("receive request:{}", requestStr);
-                            final RpcRequest rpcRequest = JSON.parseObject(requestStr, RpcRequest.class);
-                            final RpcResponse rpcResponse = RequestHandler.handle(rpcRequest);
-                            byteBuffer.clear();
-                            byteBuffer.put(JSON.toJSONString(rpcResponse).getBytes(StandardCharsets.UTF_8));
-                            byteBuffer.flip();
-                            client.write(byteBuffer);
+                        if (read == -1) {
+                            log.debug("client closed,host:{},port:{}",
+                                ((InetSocketAddress)client.getRemoteAddress()).getHostName(),
+                                ((InetSocketAddress)client.getRemoteAddress()).getPort());
+                            client.close();
+                        } else if (read > 0) {
+                            executor.execute(() -> {
+                                try {
+                                    final String requestStr = new String(byteBuffer.array());
+                                    log.info("receive request:{}", requestStr);
+                                    final RpcRequest rpcRequest = JSON.parseObject(requestStr, RpcRequest.class);
+                                    final RpcResponse rpcResponse = RequestHandler.handle(rpcRequest);
+                                    byteBuffer.clear();
+                                    byteBuffer.put(JSON.toJSONString(rpcResponse).getBytes(StandardCharsets.UTF_8));
+                                    byteBuffer.flip();
+                                    client.write(byteBuffer);
+                                    client.register(selector, SelectionKey.OP_READ);
+                                } catch (IOException e) {
+                                    log.error(
+                                        "Here comes an error while handling the request,may client has disconnected",
+                                        e);
+                                    try {
+                                        client.close();
+                                    } catch (IOException ex) {
+                                        log.error("Here comes an error while close the socketChannel in server.", e);
+                                    }
+                                } catch (Exception e) {
+                                    log.error("Here comes an error while handling the request.", e);
+                                }
+                            });
                         }
                     }
                 }

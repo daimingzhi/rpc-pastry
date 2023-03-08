@@ -1,8 +1,8 @@
 package com.easy4coding.rpc.consumer.client;
 
 import com.alibaba.fastjson.JSON;
-import com.easy4coding.rpc.consumer.client.channel.NioChannel;
 import com.easy4coding.rpc.consumer.client.channel.RpcChannel;
+import com.easy4coding.rpc.consumer.client.channel.netty.NettyChannel;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,15 +21,18 @@ public class RpcClient {
         this.rpcChannel = rpcChannel;
     }
 
-    public RpcResponse sendRequest(RpcRequest request) throws Exception {
-        rpcChannel.send(request);
-        final byte[] receive = rpcChannel.receive();
-        return JSON.parseObject(new String(receive), RpcResponse.class);
-    }
-
     public static RpcClient newRpcClient(String host, int port) {
         String cacheKey = host + ":" + port;
-        return channelMap.computeIfAbsent(cacheKey, key -> new RpcClient(new NioChannel(host, port)));
+        return channelMap.computeIfAbsent(cacheKey, key -> new RpcClient(new NettyChannel(host, port)));
+    }
+
+    public RpcResponse sendRequest(RpcRequest request) throws Exception {
+
+        rpcChannel.send(JSON.toJSONBytes(request));
+
+        final byte[] receive = rpcChannel.receive();
+
+        return JSON.parseObject(new String(receive), RpcResponse.class);
     }
 
 }
