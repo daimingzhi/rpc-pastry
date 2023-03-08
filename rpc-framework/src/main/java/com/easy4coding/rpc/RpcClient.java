@@ -18,9 +18,6 @@ public class RpcClient {
         proxy.borrow(new Book("big book", "big"));
         final Book buy = proxy.buy(100);
         System.out.println("client buy a book：" + JSON.toJSONString(buy));
-
-
-        System.in.read();
     }
 
 }
