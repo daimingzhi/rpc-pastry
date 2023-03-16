@@ -13,7 +13,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -98,7 +97,7 @@ public class NioServer implements RpcServer {
                                     final RpcRequest rpcRequest = JSON.parseObject(requestStr, RpcRequest.class);
                                     final RpcResponse rpcResponse = RequestHandler.handle(rpcRequest);
                                     byteBuffer.clear();
-                                    byteBuffer.put(JSON.toJSONString(rpcResponse).getBytes(StandardCharsets.UTF_8));
+                                    byteBuffer.put(JSON.toJSONBytes(rpcResponse));
                                     byteBuffer.flip();
                                     client.write(byteBuffer);
                                     client.register(selector, SelectionKey.OP_READ);

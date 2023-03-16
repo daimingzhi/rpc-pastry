@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -68,7 +67,7 @@ public class BioServer implements RpcServer {
                     log.info("receive request:{}", requestStr);
                     final RpcRequest rpcRequest = JSON.parseObject(requestStr, RpcRequest.class);
                     final RpcResponse rpcResponse = RequestHandler.handle(rpcRequest);
-                    client.getOutputStream().write(JSON.toJSONString(rpcResponse).getBytes(StandardCharsets.UTF_8));
+                    client.getOutputStream().write(JSON.toJSONBytes(rpcResponse));
                 }
             } catch (Exception e) {
                 log.error("error occur while handling client", e);

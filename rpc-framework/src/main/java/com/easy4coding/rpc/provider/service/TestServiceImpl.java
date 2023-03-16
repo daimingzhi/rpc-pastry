@@ -2,13 +2,13 @@ package com.easy4coding.rpc.provider.service;
 
 import com.alibaba.fastjson.JSON;
 import com.easy4coding.rpc.api.entity.Book;
-import com.easy4coding.rpc.api.DmzService;
+import com.easy4coding.rpc.api.TestService;
 
 /**
  * @author dmz
  * @date Create in 12:28 上午 2021/12/12
  */
-public class DmzServiceImpl implements DmzService {
+public class TestServiceImpl implements TestService {
 
     @Override
     public void say(String words) {

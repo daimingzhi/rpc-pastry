@@ -11,18 +11,18 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServiceExporter {
 
-    private static final Map<String, Object> exporterMap = new ConcurrentHashMap<>();
+    private static final Map<String, Object> EXPORTER_MAP = new ConcurrentHashMap<>();
 
-    public static void export(Class<?> clazz, Object o) {
-        if (!clazz.isAssignableFrom(o.getClass())) {
+    public static void export(Class<?> clazz, Object target) {
+        if (!clazz.isAssignableFrom(target.getClass())) {
             throw new IllegalArgumentException("illegal argument,the object did not implement " + clazz.getName());
         }
-        final String simpleName = clazz.getName();
-        exporterMap.put(simpleName, o);
+        final String interfaceName = clazz.getName();
+        EXPORTER_MAP.put(interfaceName, target);
     }
 
     public static Object getTarget(String serviceName) {
-        final Object o = exporterMap.get(serviceName);
+        final Object o = EXPORTER_MAP.get(serviceName);
         if (o == null) {
             throw new RpcException("there is no provider in server");
         }

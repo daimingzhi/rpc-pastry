@@ -15,7 +15,7 @@ public class RpcClient {
 
     private final RpcChannel rpcChannel;
 
-    private static final Map<String, RpcClient> channelMap = new ConcurrentHashMap<>();
+    private static final Map<String, RpcClient> CHANNEL_MAP = new ConcurrentHashMap<>();
 
     private RpcClient(RpcChannel rpcChannel) {
         this.rpcChannel = rpcChannel;
@@ -23,16 +23,16 @@ public class RpcClient {
 
     public static RpcClient newRpcClient(String host, int port) {
         String cacheKey = host + ":" + port;
-        return channelMap.computeIfAbsent(cacheKey, key -> new RpcClient(new NettyChannel(host, port)));
+        return CHANNEL_MAP.computeIfAbsent(cacheKey, key -> new RpcClient(new NettyChannel(host, port)));
     }
 
     public RpcResponse sendRequest(RpcRequest request) throws Exception {
-
-        rpcChannel.send(JSON.toJSONBytes(request));
-
-        final byte[] receive = rpcChannel.receive();
-
-        return JSON.parseObject(new String(receive), RpcResponse.class);
+        // 同一个channel下保证request-response一一对应
+        synchronized (rpcChannel){
+            rpcChannel.send(JSON.toJSONBytes(request));
+            final byte[] receive = rpcChannel.receive();
+            return JSON.parseObject(new String(receive), RpcResponse.class);
+        }
     }
 
 }
