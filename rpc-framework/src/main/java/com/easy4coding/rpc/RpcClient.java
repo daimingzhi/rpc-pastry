@@ -46,8 +46,8 @@ public class RpcClient {
         //        System.out.println("client buy a book：" + JSON.toJSONString(buy));
 
         final RegistryConfig registryConfig = new RegistryConfig();
-        registryConfig.setAddress("127.0.0.1:6379");
-        registryConfig.setRegistryType(RegistryConfig.RegistryType.REDIS);
+        registryConfig.setAddress("127.0.0.1:2181");
+        registryConfig.setRegistryType(RegistryConfig.RegistryType.ZOOKEEPER);
         ReferenceConfig<TestService> referenceConfig = new ReferenceConfig<>();
 
         referenceConfig.setInterfaceClass(TestService.class);

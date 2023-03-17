@@ -2,6 +2,8 @@ package com.easy4coding.rpc.config;
 
 import com.easy4coding.rpc.consumer.proxy.RpcProxyFactory;
 import com.easy4coding.rpc.registry.*;
+import com.easy4coding.rpc.registry.redis.RpcRedisRegistry;
+import com.easy4coding.rpc.registry.zookeeper.RpcZookeeperRegistry;
 import lombok.Data;
 
 /**

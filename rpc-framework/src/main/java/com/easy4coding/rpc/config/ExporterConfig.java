@@ -3,6 +3,8 @@ package com.easy4coding.rpc.config;
 import com.easy4coding.rpc.provider.ServiceExporter;
 import com.easy4coding.rpc.provider.server.netty.NettyServer;
 import com.easy4coding.rpc.registry.*;
+import com.easy4coding.rpc.registry.redis.RpcRedisRegistry;
+import com.easy4coding.rpc.registry.zookeeper.RpcZookeeperRegistry;
 import lombok.Data;
 
 /**

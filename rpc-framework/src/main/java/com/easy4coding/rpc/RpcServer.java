@@ -1,8 +1,9 @@
 package com.easy4coding.rpc;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.RetryNTimes;
+import com.easy4coding.rpc.api.TestService;
+import com.easy4coding.rpc.config.ExporterConfig;
+import com.easy4coding.rpc.config.RegistryConfig;
+import com.easy4coding.rpc.provider.service.TestServiceImpl;
 
 /**
  * @author dmz
@@ -23,32 +24,32 @@ public class RpcServer {
         //        NettyServer nettyServer = new NettyServer("127.0.0.1", 8080);
         //        nettyServer.open();
 
-        // 使用redisRegistry
-//        ExporterConfig<TestService> exporterConfig = new ExporterConfig<>();
-//        exporterConfig.setServiceInterface(TestService.class);
-//        exporterConfig.setObject(new TestServiceImpl());
-//        exporterConfig.setPort(8080);
-//        exporterConfig.setHost("127.0.0.1");
-//        final RegistryConfig registryConfig = new RegistryConfig();
-//        registryConfig.setAddress("127.0.0.1:6379");
-//        registryConfig.setRegistryType(RegistryConfig.RegistryType.REDIS);
-//
-//        exporterConfig.setRegistryConfig(registryConfig);
-//
-//        exporterConfig.export();
+        //         使用redisRegistry
+        //        ExporterConfig<TestService> exporterConfig = new ExporterConfig<>();
+        //        exporterConfig.setServiceInterface(TestService.class);
+        //        exporterConfig.setObject(new TestServiceImpl());
+        //        exporterConfig.setPort(8080);
+        //        exporterConfig.setHost("127.0.0.1");
+        //        final RegistryConfig registryConfig = new RegistryConfig();
+        //        registryConfig.setAddress("127.0.0.1:6379");
+        //        registryConfig.setRegistryType(RegistryConfig.RegistryType.REDIS);
+        //
+        //        exporterConfig.setRegistryConfig(registryConfig);
+        //
+        //        exporterConfig.export();
 
-        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
-            .connectString("127.0.0.1" + ":" + 2181)
-            .retryPolicy(new RetryNTimes(1, 1000))
-            .connectionTimeoutMs(5000)
-            .sessionTimeoutMs(30 * 1000);
+        // 使用zookeeperRegistry
+        final RegistryConfig registryConfig = new RegistryConfig();
+        registryConfig.setAddress("127.0.0.1:2181");
+        registryConfig.setRegistryType(RegistryConfig.RegistryType.ZOOKEEPER);
 
-        final CuratorFramework client = builder.build();
-
-        client.start();
-
-        client.blockUntilConnected();
-
+        ExporterConfig<TestService> exporterConfig = new ExporterConfig<>();
+        exporterConfig.setServiceInterface(TestService.class);
+        exporterConfig.setObject(new TestServiceImpl());
+        exporterConfig.setPort(8080);
+        exporterConfig.setHost("127.0.0.1");
+        exporterConfig.setRegistryConfig(registryConfig);
+        exporterConfig.export();
 
     }
 }

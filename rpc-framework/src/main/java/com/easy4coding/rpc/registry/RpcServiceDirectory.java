@@ -1,6 +1,7 @@
 package com.easy4coding.rpc.registry;
 
 import com.easy4coding.rpc.consumer.exception.RpcException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @author dmz
  * @date Create in 5:56 下午 2023/3/11
  */
+@Slf4j
 public class RpcServiceDirectory<T> implements RpcSubscriber {
 
     private final List<RpcInstance> cacheProviders = new ArrayList<>();
@@ -24,6 +26,7 @@ public class RpcServiceDirectory<T> implements RpcSubscriber {
 
     @Override
     public synchronized void notify(List<RpcInstance> providers) {
+        log.debug("notify providers:{}", providers);
         cacheProviders.clear();
         if (providers.isEmpty()) {
             return;
