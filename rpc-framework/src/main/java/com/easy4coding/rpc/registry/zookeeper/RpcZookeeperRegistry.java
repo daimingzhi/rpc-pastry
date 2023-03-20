@@ -43,8 +43,8 @@ public class RpcZookeeperRegistry implements Registry {
             .connectString(host + ":" + port)
             .retryPolicy(new RetryNTimes(1, 1000))
             .connectionTimeoutMs(5000)
-            // 临时节点会在session超时后被删除
-            .sessionTimeoutMs(30 * 1000);
+            // 临时节点会在session超时后被删除，跟redisRegistry的过期时间保持一直
+            .sessionTimeoutMs(15 * 1000);
 
         this.client = builder.build();
         this.client.start();
