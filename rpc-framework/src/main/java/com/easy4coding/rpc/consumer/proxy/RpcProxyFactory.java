@@ -1,14 +1,13 @@
 package com.easy4coding.rpc.consumer.proxy;
 
 import com.easy4coding.rpc.consumer.client.RpcClient;
-import com.easy4coding.rpc.consumer.exception.RpcException;
 import com.easy4coding.rpc.registry.RpcInstance;
 import com.easy4coding.rpc.registry.RpcServiceDirectory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author dmz
@@ -26,31 +25,21 @@ public class RpcProxyFactory {
     @SuppressWarnings("unchecked")
     public static <T> T createProxy(final Class<T> clazz, RpcServiceDirectory<T> directory) {
         final List<RpcInstance> providers = directory.getCacheProviders();
+
+        // 负载均衡
+        RpcInstance selected = select(providers);
+
         return (T)Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {clazz},
-            (proxy, method, args) -> {
-
-                final List<T> remoteServices = providers.stream()
-                    .map(provider -> (T)Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                        new Class[] {clazz},
-                        new RpcInvocationHandler(RpcClient.newRpcClient(provider.getHost(), provider.getPort()),
-                            clazz)))
-                    .collect(Collectors.toList());
-
-                // 负载均衡
-                T t = select(remoteServices);
-
-                // 集群容错
-                try {
-                    return method.invoke(t, args);
-                } catch (Exception e) {
-                    throw new RpcException(e.getMessage());
-                }
-            });
+            new RpcInvocationHandler(RpcClient.newRpcClient(selected.getHost(), selected.getPort()), clazz));
 
     }
 
-    private static <T> T select(List<T> remoteServices) {
-        return remoteServices.get(0);
+    /**
+     * 负载均衡：随机选择一个节点
+     */
+    private static RpcInstance select(List<RpcInstance> providers) {
+        final int index = ThreadLocalRandom.current().nextInt(providers.size());
+        return providers.get(index);
     }
 
 }
